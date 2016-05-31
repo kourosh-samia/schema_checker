@@ -1,22 +1,126 @@
 <?php
-/*
+/* 
+__________________________________________________________________________________ 
+You can set the rules in this file. 
+    1. If you have developed a new test, you can add it to the default array.
+       Also, you can turn a test on or off. This is helpful when you want to 
+       run the schema checker for all tests but, don't want to mention them 
+       one by one in the command line.
+       
+    2. You can turn the test on or off for a specific database you have. 
+       Basically, you can override the default test as well.
+       
+    3. You can set verbosity and exceptions for each test on every database 
+       or two databases that needs to be tested for schema validation.
+__________________________________________________________________________________ 
 
-Testing schema checking on same database on two different servers							
-				missing tables	missing fields	missing index	wrong attributes			
-aeonflux		ok				ok				ok				ok			
-course_merge	ok				ok				ok				ok			
-lms2prod		ok				ok				ok				ok			
-lms2views		ok				ok				ok				ok			
-sitel_feed		ok				ok				ok				ok			
-sitel_feed_temp	ok				ok				ok				ok			
-lms2migration	ok				ok				ok				ok			
-user_merge		ok				ok				ok				ok			
-lms2delta		ok				ok				ok				ok			
-data_whurehouse	ok				ok				ok				ok			
-lms2archive		ok				ok				ok				ok			
-lms2groups		ok				ok				ok				ok			
-							
-							
+##################################################################################       
+In getTestConfig you can set the default tests or override them. Below example 
+shows the summary of override
+
+     missing tables	missing fields	missing index  wrong attributes must-exist-field  must-exist-pk  no-default  no-index-but-pk
+db1		    YES			YES				   YES			YES               NO               NO            NO             NO			
+db2		    YES			YES				   YES			YES               NO               YES           YES            YES			
+db3		    YES			YES				   YES			YES               NO               NO            NO             NO			
+db4		    YES			YES				   NO			NO                NO               NO            NO             NO			
+##################################################################################       
+
+
+*/ 
+       
+class App_Config_RulesConfig{
+    
+    /**
+     * You can set the default tests here. 
+     * schema checker needs to know by 
+     * default which tests are on or off
+     * 
+     * @param String $db_tests -> This is the name of the database 
+     *                            which you set the rules to override 
+     *                            the validation tests
+     * @return Array           -> An array of tests and their status 
+     *                            will be returned                           
+     */
+    public static function getTestConfig($db_tests){
+        
+        // So far we have developed tests as below
+        $default = array(
+                        'missing-tables'    => TRUE,
+                        'missing-fields'    => TRUE,
+                        'missing-index'     => TRUE,
+                        'wrong-attributes'  => TRUE,
+                        'must-exist-field'  => TRUE,
+                        'must-exist-pk'     => TRUE,
+                        'no-default'        => TRUE,
+                        'no-index-but-pk'   => TRUE
+                        );
+        // Here you can override the default tests for every database you have 
+        $override_rules = array(
+                                'db1'=>array(
+                                            'missing-tables'         => TRUE,
+                                            'missing-fields'         => TRUE,
+                                            'missing-index'          => TRUE,
+                                            'wrong-attributes'       => TRUE,
+                                            'must-exist-field'       => FALSE,
+                                            'must-exist-pk'          => FALSE,
+                                            'no-default'             => FALSE,
+                                            'no-index-but-pk'        => FALSE
+                                            ),
+                            
+                                'db2'=>array(
+                                            'missing-tables'         => TRUE,
+                                            'missing-fields'         => TRUE,
+                                            'missing-index'          => TRUE,
+                                            'wrong-attributes'       => TRUE,
+                                            'must-exist-field'       => FALSE,
+                                            'must-exist-pk'          => TRUE,
+                                            'no-default'             => TRUE,
+                                            'no-index-but-pk'        => TRUE
+                                            ),
+                            
+                                'db3'=>array(
+                                            'missing-tables'     => TRUE,
+                                            'missing-fields'     => TRUE,
+                                            'missing-index'      => TRUE,
+                                            'wrong-attributes'   => TRUE,
+                                            'must-exist-field'   => FALSE,
+                                            'must-exist-pk'      => FALSE,
+                                            'no-default'         => FALSE,
+                                            'no-index-but-pk'    => FALSE
+                                            ),
+                            
+                                'db4'=>array(
+                                            'missing-tables'     => TRUE,
+                                            'missing-fields'     => TRUE,
+                                            'missing-index'      => FALSE,
+                                            'wrong-attributes'   => FALSE,
+                                            'must-exist-field'   => FALSE,
+                                            'must-exist-pk'      => FALSE,
+                                            'no-default'         => FALSE,
+                                            'no-index-but-pk'    => FALSE
+                                            )    	
+        );
+
+        // If the tests for specific database was asked then the appropriate array  
+        // will be returned otherwise the default array tests will be sent back
+        if(array_key_exists(trim($db_tests), $override_rules)){
+            $test_rules[$db_tests]['test-flag'] = FALSE;
+            return $test_rules[$db_tests];
+        }else{
+            $default['test-flag'] = FALSE;
+            return $default;
+        }
+    }     
+
+    public static function getRulesConfig(){
+        
+    }    
+    
+}
+       
+
+
+    
 Testing schema checking and Rules							
 								missing tables	missing fields	missing index	wrong attributes	must_exist_pk	must_exist_field	no default
 Lms2prod - > user_merge			ok				ok				ok				ok					ok				ok					NA
@@ -24,14 +128,13 @@ Lms2prod - > lms2archive		ok				ok				ok				ok					NA				NA					ok
 Lms2prod - > lms2delta			ok				ok				ok				ok					NA				NA					ok
 sitel_feed  - > sitel_feed_temp	ok				ok				ok				ok					NA				NA					NA
 
-*/
+
 
 //_GOOD',0
 //_INFO'   ,1   // white
 //_WARNING',2   // yellow
 //_ERROR'  ,3   // purple
 //_FATAL'  ,4   // red
-class App_Config_RulesConfig{
 	
 	/*
 	 * $key is actualy the target_db_name. If it finds it, the test_rules will be returned otherwise the default
@@ -39,128 +142,6 @@ class App_Config_RulesConfig{
 	 * but if you use --test switch with specific arguments, then if those arguments been activated in the test_rules then they will 
 	 * get run otherwise they wont.
 	 */
-	public static function getTestConfig($key){
-		$default = array(
-						 'missing-tables'         => TRUE,
-		                 'missing-fields'         => TRUE,        
-					   	 'missing-index'          => TRUE,        
-						 'wrong-attributes'       => TRUE,        
-						 'must-exist-field'       => TRUE,        
-						 'must-exist-pk'          => TRUE,          
-						 'no-default'             => TRUE, 
-						 'no-index-but-pk'        => TRUE 
-						);
-											
-		$test_rules = array(
-                		    'aeonflux'=>array(
-                                		        'missing-tables'         => TRUE,
-                		                        'missing-fields'         => TRUE,
-                                		        'missing-index'          => TRUE,
-                                		        'wrong-attributes'       => TRUE,
-                                		        'must-exist-field'       => FALSE,
-                                		        'must-exist-pk'          => FALSE,
-                                		        'no-default'             => FALSE,
-                                		        'no-index-but-pk'        => FALSE
-                		    ),
-		    
-                		    'user_merge'=>array(
-												'missing-tables'         => TRUE,
-                		                        'missing-fields'         => TRUE,        
-					   	 						'missing-index'          => TRUE,        
-												'wrong-attributes'       => TRUE,        
-											    'must-exist-field'       => TRUE,
-												'must-exist-pk'          => TRUE,          
-												'no-default'             => TRUE,
-												'no-index-but-pk'        => TRUE
-												),
-
-                		    'course_merge'=>array(
-                                		        'missing-tables'     => TRUE,
-                		                        'missing-fields'     => TRUE,
-                                		        'missing-index'      => TRUE,
-                                		        'wrong-attributes'   => TRUE,
-                                		        'must-exist-field'   => FALSE,
-                                		        'must-exist-pk'      => FALSE,
-                                		        'no-default'         => FALSE,
-                                		        'no-index-but-pk'    => FALSE
-                		    ),
-		    
-							'lms2groups'=>array(
-												'missing-tables'     => TRUE,
-							                    'missing-fields'     => TRUE,        
-					   	 						'missing-index'      => TRUE,        
-												'wrong-attributes'   => TRUE,        
-											    'must-exist-field'   => TRUE,
-												'must-exist-pk'      => TRUE,          
-												'no-default'         => TRUE,
-												'no-index-but-pk'    => TRUE
-												),
-																		
-						    'sitel_feed_temp'=>array(
-						    						'missing-tables'     => TRUE,
-						                            'missing-fields'     => TRUE,        
-					   	 							'missing-index'      => TRUE,        
-													'wrong-attributes'   => TRUE,        
-													'must-exist-field'   => FALSE,        
-													'must-exist-pk'      => FALSE,          
-													'no-default'         => FALSE,
- 												    'no-index-but-pk'    => FALSE
-												),
-																 
-						    'lms2archive'=>array(
-						    					 'missing-tables'     => TRUE,
-						                         'missing-fields'     => TRUE,        
-					   	 						 'missing-index'      => TRUE,        
-												 'wrong-attributes'   => TRUE,        
-												 'must-exist-field'   => FALSE,        
-												 'must-exist-pk'      => FALSE,          
-												 'no-default'         => TRUE,        
-												 'no-index-but-pk'    => TRUE
-												),
-												
-						    'lms2prod'=>array(
-						    					'missing-tables'     => TRUE,
-						                        'missing-fields'     => TRUE,        
-					   	 						'missing-index'      => TRUE,        
-												'wrong-attributes'   => TRUE,        
-												'must-exist-field'   => FALSE,        
-												'must-exist-pk'      => FALSE,          
-												'no-default'         => FALSE,        
- 												'no-index-but-pk'    => FALSE
-												),
-											
-						    'lms2migration'=>array(
-						    					'missing-tables'     => TRUE,
-						                        'missing-fields'     => TRUE,        
-					   	 						'missing-index'      => TRUE,        
-												'wrong-attributes'   => TRUE,        
-												'must-exist-field'   => FALSE,        
-												'must-exist-pk'      => FALSE,          
-												'no-default'         => FALSE,
- 												'no-index-but-pk'    => FALSE
-											),
-											
-						    'lms2delta'=>array(
-						    					'missing-tables'     => TRUE,
-						                        'missing-fields'     => TRUE,        
-					   	 						'missing-index'      => TRUE,        
-												'wrong-attributes'   => TRUE,        
-												'must-exist-field'   => TRUE,        
-												'must-exist-pk'      => TRUE,          
-												'no-default'         => TRUE,
- 												'no-index-but-pk'    => TRUE
-											),
-											
-						);
-
-		if(array_key_exists(trim($key), $test_rules)){
-			$test_rules[$key]['test-flag'] = FALSE;
-			return $test_rules[$key];
-		}else{
-			$default['test-flag'] = FALSE;
-			return $default;
-		}				
-	}
 	
 	public static function getRulesConfig(){
 //		source::table_name::field_name::index_name     | target      | error type      | Severity level
@@ -600,4 +581,3 @@ class App_Config_RulesConfig{
 	);
 		return $user_rulz;
 	}
-}
