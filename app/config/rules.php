@@ -15,7 +15,7 @@ You can set the rules in this file.
 __________________________________________________________________________________ 
 
 ##################################################################################       
-In getTestConfig you can set the default tests or override them. Below example 
+In getTestConfig() you can set the default tests or override them. Below example 
 shows the summary of override
 
      missing tables	missing fields	missing index  wrong attributes must-exist-field  must-exist-pk  no-default  no-index-but-pk
@@ -25,6 +25,8 @@ db3		    YES			YES				   YES			YES               NO               NO            
 db4		    YES			YES				   NO			NO                NO               NO            NO             NO			
 ##################################################################################       
 
+In getRulesConfig() you can set your exceptions for tests and set the verbosity 
+for each exception
 
 */ 
        
