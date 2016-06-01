@@ -1,14 +1,14 @@
 <?php
-require_once('Command.php');
-require_once('Config.php');
-require_once('Functions.php');
-require_once('Models.php');
-require_once('Db.php');
-require_once('Rules.php');
-require_once('Exphandler/Exphandler.php');
-require_once('Exphandler/General.php');
+require_once('commandLine.php');
+require_once('config.php');
+require_once('functions.php');
+//require_once('Models.php');
+//require_once('Db.php');
+require_once('buildRules.php');
+//require_once('Exphandler/Exphandler.php');
+//require_once('Exphandler/General.php');
 
-require_once('Config/RulesConfig.php');
+require_once('config/rules.php');
 
 
 // function autoload($class) {

@@ -16,13 +16,14 @@ define('_FILE_NOT_EXIST',1001);
 require_once '../app/bootstrap.php';
 
 //@todo find out what is this rules_object. i has been changed dont forget
+
 //Load the Rule Configurations into Objects
 $rules_object = array();
-foreach(functions::getRulesConfig() as $one_rule){
-    rules::$global_rules[] = new rules($one_rule);
+foreach(functions::getExceptionRules() as $one_rule){
+    buildRules::$global_rules[] = new buildRules($one_rule);
 }
 
-$command = new command($argv);
+$command = new commandLine($argv);
 
 $info = array('source_host'    => $command->getSourceHost(),
 			  'source_db'      => $command->getSourceDB(),

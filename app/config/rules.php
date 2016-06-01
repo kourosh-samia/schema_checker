@@ -150,23 +150,22 @@ class rules{
      * 
      * @return Array -> array of exeptions
      */
-    public static function getRulesConfig(){
+    public static function getExceptionRules(){
         $user_rules = array(
                             // db1 vs db2
                             //------------------------------------------------------
-                            array('db1::*'                ,'db2' ,'MissingTable'    ,_GOOD),
-                            array('db1::*::*'             ,'db2' ,'MissingField'    ,_ERROR),
-                            array('db::*::*::*'           ,'db2' ,'MissingIndex'    ,_GOOD),
-                            array('db1::*::*::*'          ,'db2' ,'DATA_TYPE'       ,_FATAL),
-                            array('db1::*::*::*'          ,'db2' ,'COLLATION_NAME'  ,_FATAL),
-                            array('db1::*::*::*'          ,'db2' ,'IS_NULLABLE'     ,_FATAL),
-                            array('db1::*::*::*'          ,'db2' ,'COLUMN_DEFAULT'  ,_FATAL),
-                            array('db1::*::*::*'          ,'db2' ,'COLUMN_TYPE'     ,_FATAL),
-                            array('db1::*::*::merge_id'   ,'db2' ,'MustExistPK'     ,_FATAL),
-                            array('db1::*::*::*'          ,'db2' ,'NoIndexButPK'    ,_FATAL),
-                            array('db1::*::merge_id'      ,'db2' ,'MustExistField'  ,_ERROR),
+                            array('db1::*'                ,'db2' ,'MissingTable'    ,VER__GOOD),
+                            array('db1::*::*'             ,'db2' ,'MissingField'    ,VER__ERROR),
+                            array('db::*::*::*'           ,'db2' ,'MissingIndex'    ,VER__GOOD),
+                            array('db1::*::*::*'          ,'db2' ,'DATA_TYPE'       ,VER__FATAL),
+                            array('db1::*::*::*'          ,'db2' ,'COLLATION_NAME'  ,VER__FATAL),
+                            array('db1::*::*::*'          ,'db2' ,'IS_NULLABLE'     ,VER__FATAL),
+                            array('db1::*::*::*'          ,'db2' ,'COLUMN_DEFAULT'  ,VER__FATAL),
+                            array('db1::*::*::*'          ,'db2' ,'COLUMN_TYPE'     ,VER__FATAL),
+                            array('db1::*::*::merge_id'   ,'db2' ,'MustExistPK'     ,VER__FATAL),
+                            array('db1::*::*::*'          ,'db2' ,'NoIndexButPK'    ,VER__FATAL),
+                            array('db1::*::merge_id'      ,'db2' ,'MustExistField'  ,VER__ERROR),
                            );
        return $user_rules;        	
     }    
-    
 }

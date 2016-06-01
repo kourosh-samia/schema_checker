@@ -1,5 +1,5 @@
 <?php
-class command{
+class commandLine{
     private $command = array();
 
     private $_COLOR   = FALSE; // Shows the result in case of verbose in color if set
@@ -24,15 +24,16 @@ class command{
 
     private $_EXCEPTION_CONFIG_FILENAME    	= '';    // The name of the file where all exceptions are existing (classes, functions, tables,...)
 
-    private $_TESTS    = array( 'test-flag'     	 => FALSE,
-        'missing-tables'     => FALSE,
-        'missing-fields'     => FALSE,
-        'wrong-attributes'   => FALSE,
-        'must-exist-field'   => FALSE,
-        'must-exist-pk'      => FALSE,
-        'no-default'         => FALSE,
-        'missing-index' 	 => FALSE,
-        'no-index-but-pk'    => FALSE);
+    private $_TESTS = array( 'test-flag'     	 => FALSE,
+                             'missing-tables'     => FALSE,
+                             'missing-fields'     => FALSE,
+                             'wrong-attributes'   => FALSE,
+                             'must-exist-field'   => FALSE,
+                             'must-exist-pk'      => FALSE,
+                             'no-default'         => FALSE,
+                             'missing-index' 	 => FALSE,
+                             'no-index-but-pk'    => FALSE
+                            );
 
     /**
      * Gets the array of arguments and set the command variables

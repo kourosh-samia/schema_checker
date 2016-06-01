@@ -1,6 +1,6 @@
 <?php
 //then build the rulz array into an object array for better usage
-class rules{
+class buildRules{
 	static public $global_rules    = array();
 	protected	  $source_database = null,
 				  $source_table    = null,
@@ -10,26 +10,34 @@ class rules{
 				  $target_database = null,
 				  $target_table    = null,
 				  $target_field    = null,
+//@todo see if you need this
+				  $target_index    = null,
 				  
 				  $error_type      = null,
-				  $level_overide   = NULL
-					;
-					
-	public function __construct(array $rulz){
-		$source                = explode('::',$rulz[0]);
+				  $verbosity       = NULL;
+	
+//@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@	
+	/**
+	 * Sets the source and target rules for each object
+	 * @param array $rules
+	 */				
+	public function __construct(array $rules){
+		$source                = explode('::',$rules[0]);
 		$this->source_database = $source[0];
 		$this->source_table    = isset($source[1])?$source[1]:'*';
 		$this->source_field    = isset($source[2])?$source[2]:'*';
 		$this->source_index    = isset($source[3])?$source[3]:'*';
 		
-		$target                = explode('::',$rulz[1]);
+		$target                = explode('::',$rules[1]);
 		$this->target_database = $target[0];
+		
+//@todo see if you need this
 		$this->target_table    = isset($target[1])?$target[1]:'*';
 		$this->target_field    = isset($target[2])?$target[2]:'*';
+		$this->target_index    = isset($target[3])?$target[3]:'*';
 		
-		$this->error_type      = $rulz[2];
-		$this->level_overide   = $rulz[3];
-		
+		$this->error_type      = $rules[2];
+		$this->verbosity       = $rules[3];
 	}
 
 	public function getMustExistFields(array $error){
