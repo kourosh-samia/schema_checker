@@ -1,30 +1,19 @@
 <?php
+//@todo find out what the hell is this
 error_reporting(E_ALL);
-
-// Sets the verbosity 
-define('VER__GOOD'   ,0);
-define('VER__INFO'   ,1); // This verbosity makes the forcolor of output WHITE
-define('VER__WARNING',2); // This verbosity makes the forcolor of output YELLOW
-define('VER__ERROR'  ,3); // This verbosity makes the forcolor of output PURPLE
-define('VER__FATAL'  ,4); // This verbosity makes the forcolor of output RED
-
-//@todo find out what are these
-define('_DEFINE_PARAM',1000);   
-define('_FILE_NOT_EXIST',1001);
 
 // Load the Bootstrap
 require_once '../app/bootstrap.php';
 
 //@todo find out what is this rules_object. i has been changed dont forget
-
 //Load the Rule Configurations into Objects
 $rules_object = array();
 foreach(functions::getExceptionRules() as $one_rule){
     buildRules::$global_rules[] = new buildRules($one_rule);
 }
 
+// Digest the command line parameters and sets the proper variables for further use
 $command = new commandLine($argv);
-
 $info = array('source_host'    => $command->getSourceHost(),
 			  'source_db'      => $command->getSourceDB(),
 			  'source_username'=> $command->getSourceUsrName(),
@@ -36,40 +25,25 @@ $info = array('source_host'    => $command->getSourceHost(),
 			  'target_password'=> $command->getTargetPWD(),
 			  'target_port'    => $command->getTargetPort(),
 
-			  'color'          => $command->getColor(),
-			  'report_level'   => $command->getReportLevel(),  // anything but 0 means it is an error 
-			  'sql_fix'        => $command->getSQLFix()
+			  'color'          => $command->getColor(),      // If TRUE it means the output on the screen will be in color
+			  'report_level'   => $command->getReportLevel(),// anything but 0 means it is an error 
+			  'sql_fix'        => $command->getSQLFix()      // If TRUE then the SQL suggestions to fix the issue will be provided 
 			);
 
-// Load the Help manual on the console
-if ($command->getHelp()) { echo(file_get_contents('../App/Help.txt')); functions::calMaxErrorLevel(_FILE_NOT_EXIST, TRUE, $command->getFailLevel());}
+// Load the help manual on the console
+if ($command->getHelp()) { 
+    echo(file_get_contents('../app/help.txt')); 
+    functions::calMaxErrorLevel(_FILE_NOT_EXIST, TRUE, $command->getFailLevel());
+}
+// output the header on the screeen if verbosity was set
+if ($command->getVerbose()==TRUE) {
+    echo (functions::parseOutoutHeader($info));
+}
 
-// to adjust the header output
-$max_length = functions::getMaxLength(array("Host: {$command->getSourceHost()}",
-								  	  		    "Port: {$command->getSourcePort()}",
-									  		    "Database: {$command->getSourceDB()}",
-									  		    "Username: {$command->getSourceUsrName()}",
-									  		    "Password: {$command->getSourcePWD()}"
-										    ));
-
-$header =PHP_EOL."-----------------------------------------------------------------------------------------------------------------".PHP_EOL. 
-functions::formatOutput("Host: {$command->getSourceHost()}", $max_length['length']+5)."Host: {$command->getTargetHost()}".PHP_EOL.
-functions::formatOutput("Port: {$command->getSourcePort()}", $max_length['length']+5)."Port: {$command->getTargetPort()}".PHP_EOL.
-functions::formatOutput("Database: {$command->getSourceDB()}", $max_length['length']+5)."Database: {$command->getTargetDB()}".PHP_EOL.
-functions::formatOutput("Username: {$command->getSourceUsrName()}", $max_length['length']+5)."Username: {$command->getTargetUsrName()}".PHP_EOL.
-functions::formatOutput("Password: {$command->getSourcePWD()}", $max_length['length']+5)."Password: {$command->getTargetPWD()}".PHP_EOL.
-functions::formatOutput("  ______", $max_length['length'] + 5)." ______".PHP_EOL.
-functions::formatOutput(" /      \ ", $max_length['length'] + 5)."/      \ ".PHP_EOL.
-functions::formatOutput("|\_____ /|", $max_length['length'] + 4)."|\______/|".PHP_EOL.
-functions::formatOutput("|        | <", $max_length['length']+1 ,"-").">  |        |".PHP_EOL.
-functions::formatOutput("| Source |", $max_length['length'] + 4)."| Target |".PHP_EOL.
-functions::formatOutput(" \______/", $max_length['length'] + 5)."\______/".PHP_EOL.
-"-----------------------------------------------------------------------------------------------------------------".PHP_EOL.PHP_EOL;
-echo $header;
 // Making sure all parameters have been defined
 if(	$command->getSourcePort()=='' || $command->getSourceDB()=='' || $command->getSourceUsrName()=='' || $command->getSourcePWD()=='' || 
 	$command->getTargetPort()=='' || $command->getTargetDB()=='' || $command->getTargetUsrName()=='' || $command->getTargetPWD()==''){
-		echo ('Please define all necessarily parameters...'.PHP_EOL.PHP_EOL);
+		echo ('Please define all necessarily parameters or use the script with --help to see the details...'.PHP_EOL.PHP_EOL);
 		functions::calMaxErrorLevel(_DEFINE_PARAM, TRUE, $command->getFailLevel());
 	}
 

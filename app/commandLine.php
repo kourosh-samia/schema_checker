@@ -4,7 +4,7 @@ class commandLine{
 
     private $_COLOR   = FALSE; // Shows the result in case of verbose in color if set
     private $_HELP    = FALSE; // Shows the help
-    private $_VERBOSE = FALSE; // Puts the output on the screen
+    private $_VERBOSE = FALSE; // Outputs the result on the consoul
     private $_SQLFIX  = FALSE; // Shows the SQL fixes to correct the issue
 
     private $_SOURCE_HOST     = '127.0.0.1'; // The default host IP address of the source host. Can be changed if specified.
@@ -74,39 +74,76 @@ class commandLine{
                     case '--help':
                         $this->setHelp();
                         break;
-                        	
+
+                    case '-h':
+                        $this->setHelp();
+                        break;
+                        
                     case '--verbose':
                         $this->setVerbose();
                         break;
-                        	
+                        
+                    case '-v':
+                            $this->setVerbose();
+                        break;
+                        
                     case '--color':
                         $this->setColor();
                         break;
-                        	
+
+                    case '-c':
+                        $this->setColor();
+                        break;
+                        
                     case '--sql-fix':
                         $this->setSQLFix();
                         break;
-                        	
+
+                    case '-sf':
+                        $this->setSQLFix();
+                        break;
+                        
                         //=========================================================
                     case '--source-database':
                         $this->checkArgument($temp, 'source-database');
                         break;
 
+                    case '-sdb':
+                        $this->checkArgument($temp, 'source-database');
+                        break;
+                        
                     case '--source-port':
                         $this->checkArgument($temp, 'source-port');
                         break;
-                        	
+
+                    case '-sp':
+                        $this->checkArgument($temp, 'source-port');
+                        break;
+                        
                     case '--source-host':
                         $this->checkArgument($temp, 'source-host');
                         break;
-                        	
+                        
+                    case '-sh':
+                        $this->checkArgument($temp, 'source-host');
+                        break;
+                        
                     case '--source-username':
                         $this->checkArgument($temp, 'source-username');
                         break;
-                        	
+
+                    case '-sun':
+                        $this->checkArgument($temp, 'source-username');
+                        break;
+                        
                     case '--source-password':
                         $this->checkArgument($temp, 'source-password');
                         break;
+                        
+                    case '-spwd':
+                        $this->checkArgument($temp, 'source-password');
+                        break;
+                        
                         //=========================================================
                     case '--target-database':
                         $this->checkArgument($temp, 'target-database');
@@ -132,14 +169,27 @@ class commandLine{
                         $this->checkArgument($temp, 'error-level');
                         break;
 
+                    case '-el':
+                        $this->checkArgument($temp, 'error-level');
+                        break;
+                        
+                        
                     case '--fail-level':
                         $this->checkArgument($temp, 'fail-level');
                         break;
-                        	
+
+                    case '-fl':
+                        $this->checkArgument($temp, 'fail-level');
+                        break;
+                        
                     case '--test':
                         $this->checkArgument($temp, 'test');
                         break;
-                        	
+                        
+                    case '-t':
+                        $this->checkArgument($temp, 'test');
+                        break;
+                        
                         //=========================================================
                     default:
                         $this->setHelp();

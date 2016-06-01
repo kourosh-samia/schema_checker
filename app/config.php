@@ -1,4 +1,15 @@
 <?php
+// Sets the verbosity
+define('VER__GOOD'   ,0);
+define('VER__INFO'   ,1); // This verbosity makes the forcolor of output WHITE
+define('VER__WARNING',2); // This verbosity makes the forcolor of output YELLOW
+define('VER__ERROR'  ,3); // This verbosity makes the forcolor of output PURPLE
+define('VER__FATAL'  ,4); // This verbosity makes the forcolor of output RED
+
+//@todo find out what are these
+define('_DEFINE_PARAM',1000);
+define('_FILE_NOT_EXIST',1001);
+
 class config{
 	public static function getAppConfig(){
 		$app_config = array(

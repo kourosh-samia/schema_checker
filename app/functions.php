@@ -3,6 +3,11 @@ class functions {
     private $config;
     static private $max_exist_status = 0;
 
+//@todo find out what is the purpose of the type here    
+    /**
+     * 
+     * @param string $type
+     */
     public function __construct($type='app'){
         if($type=='app'){
             die('unknown $type 1111111111111');
@@ -26,7 +31,7 @@ class functions {
     }
 
     //----------------------------------- Rules Config --------------------------------------------------
-
+//GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG
     /**
      * Returns a function object 
      */
@@ -83,14 +88,20 @@ class functions {
         return ($temp['system-messages'][$topic][$type].PHP_EOL);
     }
 
+    
     //----------------------------------- GENERAL --------------------------------------------------
+    
+//GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG
    /**
-    * calculate the maximum error level. If the current $max_exist_status smaller
-    * then passed on the error level then it will be set to new value
-    * @param Int error_level-> passed on error level
+    * This function calculates the maximum error level. 
+    * If the current $max_exist_status smaller then 
+    * passed on the error level then it will be set 
+    * to new value
+    * 
+    * @param Int error_level -> passed on error level
     * @param Boolean $exitme -> If ture the exit with $max_exist_status
     */
-    public static function calMaxErrorLevel($error_level, $exitme=FALSE, $fail_level=3){
+    public static function calMaxErrorLevel($error_level, $exitme = FALSE, $fail_level = 3){
         if(self::$max_exist_status < $error_level){
             self::$max_exist_status = $error_level;
         }
@@ -163,4 +174,38 @@ class functions {
 	public static function getClass($data){
 		print_r($data);
 	}
+
+//GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG	
+    /**
+     * This function will generate a header for the schema checker
+     *
+     * @param array $info -> The array of all server variables needed to generate the header
+     * @return string -> parsed header will be returned
+     */
+	 public static function parseOutoutHeader($info){
+        // to find the maximum lenght of charachers in a line and use it to adjust the header output
+        $max_length = self::getMaxLength(array( "Host: {$info['source_host']}",
+                                                "Port: {$info['source_port']}",
+                                                "Database: {$info['source_db']}",
+                                                "Username: {$info['source_username']}",
+                                                "Password: {$info['source_password']}"
+                                                )
+                                        );
+        
+        $header = PHP_EOL."-----------------------------------------------------------------------------------------------------------------".PHP_EOL.
+        self::formatOutput("Host: {$info['source_host']}",         $max_length['length']+5)."Host: {$info['target_host']}".PHP_EOL.
+        self::formatOutput("Port: {$info['source_port']}",         $max_length['length']+5)."Port: {$info['target_port']}".PHP_EOL.
+        self::formatOutput("Database: {$info['source_db']}",       $max_length['length']+5)."Database: {$info['target_db']}".PHP_EOL.
+        self::formatOutput("Username: {$info['source_username']}", $max_length['length']+5)."Username: {$info['target_username']}".PHP_EOL.
+        self::formatOutput("Password: {$info['source_password']}", $max_length['length']+5)."Password: {$info['target_password']}".PHP_EOL.
+        self::formatOutput("  ______",     $max_length['length'] + 5)." ______".PHP_EOL.
+        self::formatOutput(" /      \ ",   $max_length['length'] + 5)."/      \ ".PHP_EOL.
+        self::formatOutput("|\_____ /|",   $max_length['length'] + 4)."|\______/|".PHP_EOL.
+        self::formatOutput("|        | <", $max_length['length']+1 ,"-").">  |        |".PHP_EOL.
+        self::formatOutput("| Source |",   $max_length['length'] + 4)."| Target |".PHP_EOL.
+        self::formatOutput(" \______/",    $max_length['length'] + 5)."\______/".PHP_EOL.
+        "-----------------------------------------------------------------------------------------------------------------".PHP_EOL.PHP_EOL;
+        return $header;
+    } 
+
 }
