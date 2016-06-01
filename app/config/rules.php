@@ -61,7 +61,7 @@ _FATAL'    ,4    red
 
 
 
-class App_Config_RulesConfig{
+class rules{
     
     /**
      * You can set the default tests here. 
