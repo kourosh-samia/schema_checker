@@ -20,65 +20,60 @@ to fix them. Currently the fix SQLs available only on some of the tests.
 More tests will be developed in future as needed.
 ===================================================================================
 
-Usage:  php ks-schema-checker.php [Options]
+Usage:  php chkschemar.php [Options]
       
 Connection:
 --------------------------
-   -sh   --source-host          Gets the host-name/IP address of the source as an argument.
-                              
-   -sp   --source-port          Gets the source port address of the source host as an argument (default 3306.)
-                              
-   -sdb  --source-database      Gets the source database name as an argument. It will be the source of
-                          comparison. It will error out if you don't define it.
-  
-   -sun  --source-username      Gets the source username as an argument. If script can not connect to the 
-                          database server it will error out.
-                              
-   -spwd --source-password      Gets the source password as an argument. If script can not connect to the
-                          database server it will error out.
-                              
-   --target-host          Gets the host-name/IP address of the target as an argument. It you don't
-                          define it, source host-name/IP address is the default (default --source-host.)
-                              
-   --target-port          Gets the target port address of the target host as an argument (default 3306)
-                              
-   --target-database      Gets the target database username as an argument. If script can not connect
-                          to the database server it will error out.
-                              
-   --target-username      Gets the target username as an argument. If script can not connect to the 
-                          database server it will error out.
-                              
-   --target-password      Gets the target password as an argument. If script can not connect to the
-                          database server it will error out.
+  --source-host      -H  Sets the Source IP address
+  --source-port      -P  Sets the Source Port number. [ Default 3306 ]
+  --source-database  -D  Sets the Source database name. It will error out if you don't define it.
+  --source-username  -U  Sets the Source Username.
+  --source-password  -W  Sets the Source Password.
+  --target-host      -h  Sets the Target IP address. [ Default --source-host ]***********************
+  --target-port      -p  Sets the Target Port number. [ Default 3306 ]**************************
+  --target-database  -d  Sets the Source database name. **********************
+  --target-username  -u  Sets the Source username. *******************************
+  --target-password  -w  Sets the Source Password.
+  --test             -T  Runs the requested test only. They have been defined as below;
+			                missing-tables   -> The missing table test on target database
+			                missing-fields   -> The missing fields on the target tables of target database
+			                missing-index    -> The missing indexes on the target tables of the target databases
+			                wrong-attributes -> The wrong attrobutes on the target tables of the target databases
+			                must-exist-field -> The fields that should exist on the target tables of the target databases
+			                must-exist-pk    -> The PK should exist in the target table
+			                no-default       -> there should not be any default in the fields of the target table
+			                no-index-but-pk  -> There should not be any index but the PK of the source database
 
-   -t    --test                 Runs the requested tests only. They have been defined as below;
-			  missing-tables   -> The missing table test on target database
-			  missing-fields   -> The missing fields on the target tables of target database
-			  missing-index    -> The missing indexes on the target tables of the target databases
-			  wrong-attributes -> The wrong attrobutes on the target tables of the target databases
-			  must-exist-field -> The fields that should exist on the target tables of the target databases
-			  must-exist-pk    -> The PK should exist in the target table
-			  no-default       -> there should not be any default in the fields of the target table
-			  no-index-but-pk  -> There should not be any index but the PK of the source database
-
-   -sf   --sql-fix              Generates the best suggested SQL fixes for the found error, However, this option 
-			  is still under test and development. Please use judgment and utilise it carefully.
-
-   -h    --help                 Show the help and exit
-
-   -v    --verbose              Show the result on the screen
-  
-   -c    --color                Show the result in color. Default is system default text color.
-
-   -el   --error-level          Show the verbosity (error level) of the result. Only problems with defined 
+  --sql-fix          -S  Generates the best suggested SQL fixes for the found error, However, this option 
+			              is still under test and development. Please use judgment and utilise it carefully.
+  --help                 Print help and exit.
+  --verbose          -V  Show the result on the screen
+  --color            -C  Show the result in color. Default is system default text color.
+  --error-level      -E  Show the verbosity (error level) of the result. Only problems with defined 
                           error level and above will be reported.
-
-   -fl   --fail-level           By default the fail-level is 3. It means any error-level 3 and above will 
-			  cause the standard output to be greater than 0. If you change it to any 
-			  other number then if the error-level is equal or greater that number will 
-			  cause the fail-level to be set to that number. 
+  --fail-level       -F  By default the fail-level is 3. It means any error-level 3 and above will 
+			              cause the standard output to be greater than 0. If you change it to any 
+			              other number then if the error-level is equal or greater that number will 
+			              cause the fail-level to be set to that number. 
    
+Options and values BEFORE processing arguments:
 
+  --source-host              127.0.0.1
+  --source-port              3306
+  --source-database          (No value)
+  --source-username          (No value)
+  --source-password          (No value)
+  --target-host              --source-host
+  --target-port              --source-port
+  --target-database          (No value)
+  --target-username          (No value)
+  --target-password          (No value)
+  --sql-fix                  FALSE
+  --error-level              0
+  --fail-level               3
+  --color                    FALSE
+  --verbose                  FALSE 
+   
 Exit Status: 
 --------------------------
     0                     If successful. any exist status greater than 0 is failure.
@@ -91,33 +86,33 @@ Exit Status:
 
 Examples:
 --------------------------
-    php ks-schema-checker.php --verbose                         [ This will connect to 10.100.0.73 and
-                              --source-host:10.100.0.73           compares lms2prod to the lms2prod of
-                              --source-database:lms2prod          server 10.100.0.79. Since the username
-                              --source-username:user1             and password of the target has not be
-                              --source-password:user1pass         defined, it will user the source's
-                              --target-host:10.100.0.79           username and password as default to
-                              --target-database:lms2prod          connect. Also, it will display the
-                              --color                             result on the screen in color. All 
+    php chkschemar.php --verbose                         [ This will connect to 10.100.0.73 and
+                       --source-host:10.100.0.73           compares lms2prod to the lms2prod of
+                       --source-database:lms2prod          server 10.100.0.79. Since the username
+                       --source-username:user1             and password of the target has not be
+                       --source-password:user1pass         defined, it will user the source's
+                       --target-host:10.100.0.79           username and password as default to
+                       --target-database:lms2prod          connect. Also, it will display the
+                       --color                             result on the screen in color. All 
                                                                   tests will be ran on it with error 
                                                                   level 0 and above.]
                             
-    php ks-schema-checker.php --verbose                         [ This will connect to 10.100.0.73 and
-                              --source-host:10.100.0.73           compares lms2prod to the lms2delta of
-                              --target-host:10.100.0.79           server 10.100.0.79. In this example
-                              --target-username:user22            we want only the missing fields to be 
-                              --target-password:user22pass        reported with error level of 2 (warning)
-                              --target-database:lms2delta         and above.
-                              --test:missing-field
-                              --error-level:2                
+    php chkschemar.php --verbose                         [ This will connect to 10.100.0.73 and
+                       --source-host:10.100.0.73           compares lms2prod to the lms2delta of
+                       --target-host:10.100.0.79           server 10.100.0.79. In this example
+                       --target-username:user22            we want only the missing fields to be 
+                       --target-password:user22pass        reported with error level of 2 (warning)
+                       --target-database:lms2delta         and above.
+                       --test:missing-field
+                       --error-level:2                
                                                                   
                             
-    php ks-schema-checker.php --source-host:10.100.0.73         [ This example is same as above but, it 
-                              --target-host:10.100.0.79           will return only the exit status of  
-                              --target-username:user22            the schema checker. You can see the  
-                              --target-password:user22pass        result by typing "echo $?" in the  
-                              --target-database:lms2delta         command- line.
-                              --exception-file:delta.php          0  Successful 
-                              --test:missing-field                Anything else Failure
-                              --error-level:2   
+    php chkschemar.php --source-host:10.100.0.73         [ This example is same as above but, it 
+                       --target-host:10.100.0.79           will return only the exit status of  
+                       --target-username:user22            the schema checker. You can see the  
+                       --target-password:user22pass        result by typing "echo $?" in the  
+                       --target-database:lms2delta         command- line.
+                       --exception-file:delta.php          0  Successful 
+                       --test:missing-field                Anything else Failure
+                       --error-level:2   
                               

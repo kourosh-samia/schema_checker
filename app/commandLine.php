@@ -2,22 +2,22 @@
 class commandLine{
     private $command = array();
 
-    private $_COLOR   = FALSE; // Shows the result in case of verbose in color if set
-    private $_HELP    = FALSE; // Shows the help
-    private $_VERBOSE = FALSE; // Outputs the result on the consoul
-    private $_SQLFIX  = FALSE; // Shows the SQL fixes to correct the issue
+    private $_COLOR   = FALSE; // Result will be in color if verbose is set
+    private $_HELP    = FALSE; // Prints the help
+    private $_VERBOSE = FALSE; // Prints the result on the screen
+    private $_SQLFIX  = FALSE; // Prints the SQL fixes to correct the issue
 
-    private $_SOURCE_HOST     = '127.0.0.1'; // The default host IP address of the source host. Can be changed if specified.
-    private $_SOURCE_PORT     = 3306;        // The default Port address of the source host. Can be changed if specified.
-    private $_SOURCE_USER     = 'lmsuser';   // The username of the source database server.
-    private $_SOURCE_PASSWORD = 'lmspass';   // The password of the source database server.
-    private $_SOURCE_DB       = '';          // The database name of the source. If not specified then as default lms2prod
+    private $_SOURCE_HOST     = '127.0.0.1'; // The default host IP address of the Source host. Can be changed if specified.
+    private $_SOURCE_PORT     = 3306;        // The Port of the Source host's database server. Can be changed if specified.
+    private $_SOURCE_USER     = '';          // [*] The username of the Source database server.
+    private $_SOURCE_PASSWORD = '';          // [*] The password of the Source database server.
+    private $_SOURCE_DB       = '';          // [*] The database name of the Source. 
 
-    private $_TARGET_HOST 	  = '127.0.0.1'; // The host IP address of the target host.
-    private $_TARGET_PORT	  = 3306;        // The default Port address of the target host. Can be changed if specified.
-    private $_TARGET_USER 	  = '';          // The username of the target database server. If not specified then same as source in construct.
-    private $_TARGET_PASSWORD = '';          // The password of the target database server. If not specified then same as source in construct.
-    private $_TARGET_DB       = '';          // The database name of the target.
+    private $_TARGET_HOST 	  = '';          // The host IP address of the Target host. Default = _SOURCE_HOST if not specified
+    private $_TARGET_PORT	  = 0;           // The Port of the Target host's database server. Default = _SOURCE_PORT if not specified
+    private $_TARGET_USER 	  = '';          // The username of Target database server. Default = _SOURCE_USER if not specified
+    private $_TARGET_PASSWORD = '';          // The password of Target database server. Default = _SOURCE_PASSWORD if not specified
+    private $_TARGET_DB       = '';          // The database name of the Target. Default = _SOURCE_DB if not specified
 
     private $_ERROR_LEVEL    = 0;          // Report the issues with severity of defined and above
     private $_FAIL_LEVEL     = 3;          // Fail on this number or above. Will override the standard output for exit status
@@ -40,8 +40,12 @@ class commandLine{
      * @param $commands -> array of arguments
     */
     public function __construct($commands) {
+        $this->_TARGET_HOST     = $this->_SOURCE_HOST;
+        $this->_TARGET_PORT     = $this->_SOURCE_PORT;
+        $this->_TARGET_DB       = $this->_SOURCE_DB;
         $this->_TARGET_USER 	= $this->_SOURCE_USER;
         $this->_TARGET_PASSWORD = $this->_SOURCE_PASSWORD;
+        
         $this->setCommands($commands);
     }
 
@@ -62,20 +66,17 @@ class commandLine{
     }
 
     /**
-     * Sets the command values
-     *
+     * Digest the command line options and variables 
+     * 
+     * @param $variables -> array of options and variables
      */
-    public function setCommands($com){
-        foreach ($com as $k=>$v) {
-            if($k>0){
+    public function setCommands($variables){
+        foreach ($variables as $key=>$value) {
+            if($key>0){
                 $temp = array();
-                $temp = explode(":", $v);
+                $temp = explode(":", $value);
                 switch (trim($temp[0])) {
                     case '--help':
-                        $this->setHelp();
-                        break;
-
-                    case '-h':
                         $this->setHelp();
                         break;
                         
@@ -83,7 +84,7 @@ class commandLine{
                         $this->setVerbose();
                         break;
                         
-                    case '-v':
+                    case '-V':
                             $this->setVerbose();
                         break;
                         
@@ -91,7 +92,7 @@ class commandLine{
                         $this->setColor();
                         break;
 
-                    case '-c':
+                    case '-C':
                         $this->setColor();
                         break;
                         
@@ -99,7 +100,7 @@ class commandLine{
                         $this->setSQLFix();
                         break;
 
-                    case '-sf':
+                    case '-S':
                         $this->setSQLFix();
                         break;
                         
@@ -108,7 +109,7 @@ class commandLine{
                         $this->checkArgument($temp, 'source-database');
                         break;
 
-                    case '-sdb':
+                    case '-D':
                         $this->checkArgument($temp, 'source-database');
                         break;
                         
@@ -116,7 +117,7 @@ class commandLine{
                         $this->checkArgument($temp, 'source-port');
                         break;
 
-                    case '-sp':
+                    case '-P':
                         $this->checkArgument($temp, 'source-port');
                         break;
                         
@@ -124,7 +125,7 @@ class commandLine{
                         $this->checkArgument($temp, 'source-host');
                         break;
                         
-                    case '-sh':
+                    case '-H':
                         $this->checkArgument($temp, 'source-host');
                         break;
                         
@@ -132,7 +133,7 @@ class commandLine{
                         $this->checkArgument($temp, 'source-username');
                         break;
 
-                    case '-sun':
+                    case '-U':
                         $this->checkArgument($temp, 'source-username');
                         break;
                         
@@ -140,7 +141,7 @@ class commandLine{
                         $this->checkArgument($temp, 'source-password');
                         break;
                         
-                    case '-spwd':
+                    case '-W':
                         $this->checkArgument($temp, 'source-password');
                         break;
                         
@@ -149,11 +150,23 @@ class commandLine{
                         $this->checkArgument($temp, 'target-database');
                         break;
 
+                    case '-d':
+                        $this->checkArgument($temp, 'target-database');
+                        break;
+
                     case '--target-port':
                         $this->checkArgument($temp, 'target-port');
                         break;
                         	
+                    case '-p':
+                        $this->checkArgument($temp, 'target-port');
+                        break;
+
                     case '--target-host':
+                        $this->checkArgument($temp, 'target-host');
+                        break;
+                        	
+                    case '-h':
                         $this->checkArgument($temp, 'target-host');
                         break;
                         	
@@ -161,7 +174,15 @@ class commandLine{
                         $this->checkArgument($temp, 'target-username');
                         break;
                         	
+                    case '-u':
+                        $this->checkArgument($temp, 'target-username');
+                        break;
+                        	
                     case '--target-password':
+                        $this->checkArgument($temp, 'target-password');
+                        break;
+                        
+                    case '-w':
                         $this->checkArgument($temp, 'target-password');
                         break;
                         //=========================================================
@@ -169,7 +190,7 @@ class commandLine{
                         $this->checkArgument($temp, 'error-level');
                         break;
 
-                    case '-el':
+                    case '-E':
                         $this->checkArgument($temp, 'error-level');
                         break;
                         
@@ -178,7 +199,7 @@ class commandLine{
                         $this->checkArgument($temp, 'fail-level');
                         break;
 
-                    case '-fl':
+                    case '-F':
                         $this->checkArgument($temp, 'fail-level');
                         break;
                         
@@ -186,7 +207,7 @@ class commandLine{
                         $this->checkArgument($temp, 'test');
                         break;
                         
-                    case '-t':
+                    case '-T':
                         $this->checkArgument($temp, 'test');
                         break;
                         
@@ -212,14 +233,14 @@ class commandLine{
 
     private function checkArgument($temp, $msg_source) {
         if(count($temp)==1){
-            echo(App_Functions::getSysMsgSource($msg_source));
-            App_Functions::calMaxErrorLevel(_FATAL);
-            App_Functions::exitMe();
+            echo(functions::getSysMsgSource($msg_source));
+            functions::calMaxErrorLevel(_FATAL);
+            functions::exitMe();
         }else{
             if(trim($temp[1])==''){
-                echo(App_Functions::getSysMsgSource($msg_source, 'error'));
-                App_Functions::calMaxErrorLevel(_FATAL);
-                App_Functions::exitMe();
+                echo(functions::getSysMsgSource($msg_source, 'error'));
+                functions::calMaxErrorLevel(_FATAL);
+                functions::exitMe();
             }else{
                 switch ($msg_source) {
                     case 'test':
